@@ -1,7 +1,6 @@
 from aiogram import types
 
-from core import bot
-from utils.core import dp
+from utils.core import dp, bot
 from utils.database import Comment
 from utils.keyboards import keyboard
 from utils.variables import OWNERS

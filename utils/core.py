@@ -1,4 +1,5 @@
 import asyncio
+# import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -6,6 +7,8 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
 from utils.variables import API_TOKEN
 
+
+# logging.basicConfig(level=logging.INFO)
 
 storage = MemoryStorage()
 loop = asyncio.get_event_loop()
