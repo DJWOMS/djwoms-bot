@@ -1,6 +1,7 @@
-from utils.h_commands import *
-from utils.h_inline import *
-from utils.h_button import *
+from aiogram.utils import executor
+
+from utils.core import dp
+from utils.database import create_tables
 
 
 if __name__ == '__main__':

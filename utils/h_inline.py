@@ -1,5 +1,8 @@
-from utils.core import *
-from utils.keyboards import *
+from aiogram import types, utils
+
+from utils.core import dp, bot
+from utils.database import Comment
+from utils.keyboards import keyboard
 
 
 @dp.callback_query_handler(lambda c: str(c.data).startswith('random_'))

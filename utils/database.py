@@ -1,4 +1,11 @@
-from utils.variables import *
+from random import choice
+
+from aiogram import types
+
+from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Text
+from sqlalchemy.orm import declarative_base, Session
+
+from utils.variables import DB_NAME
 
 
 engine = create_engine(f'sqlite:///{DB_NAME}', echo=False)
@@ -6,10 +13,12 @@ Base = declarative_base()
 
 session = Session(bind=engine)
 
+
 def create_tables():
     """Создание БД и таблиц"""
     Base.metadata.create_all(engine)
     return "Успешное создание БД и таблиц"
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -17,9 +26,9 @@ class User(Base):
     user_id = Column(BigInteger, unique=True)
     lang = Column(String)
 
-    def __init__(self, message:types.Message):
+    def __init__(self, message: types.Message):
         self.message = message
-        
+
     def __repr__(self):
         return f"<User('{self.id}', '{self.message.from_user.id}')>"
 
@@ -37,15 +46,17 @@ class User(Base):
         finally:
             session.close()
 
-    def get(self, **kw):
+    def get(self, **kwargs):
         """Чтение данных пользователя из таблицы"""
-        result:User=None
-        if kw:
-            result = session.query(self.__class__).filter_by(**kw).first()
+        result: User = None
+        if kwargs:
+            result = session.query(self.__class__).filter_by(**kwargs).first()
         else:
-            result = session.query(self.__class__).filter_by(user_id=self.message.from_user.id).first()
+            result = session.query(self.__class__).filter_by(
+                user_id=self.message.from_user.id
+            ).first()
         return result
-    
+
     def update(self, instance):
         """Обновление данных пользователя"""
         try:
@@ -59,21 +70,23 @@ class User(Base):
         """Получить список пользователей"""
         return [user for user in session.query(self.__class__).distinct()]
 
+
 class Comment(Base):
     __tablename__ = 'comments'
+
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger)
     name = Column(String)
     text = Column(Text)
     post_id = Column(Integer)
 
-    def __init__(self, message:types.Message):
+    def __init__(self, message: types.Message):
         self.message = message
-        
+
     def __repr__(self):
         return f"<Comment('{self.id}', '{self.user_id}', '{self.name}')>"
 
-    def add(self, post_id:int=None):
+    def add(self, post_id: int = None):
         """Добавляем комментарий в таблицу"""
         try:
             comment = self.__class__(message=self.message)
@@ -91,21 +104,20 @@ class Comment(Base):
 
     def get(self, **kw):
         """Чтение данных пользователя из таблицы"""
-        result:Comment=None
+        result: Comment = None
         if kw:
             result = session.query(self.__class__).filter_by(**kw).first()
         else:
             result = [comment for comment in session.query(self.__class__).distinct()]
         return result
 
-    def get_random_user(self, post_id:int=None):
+    def get_random_user(self, post_id: int = None):
         comments = session.query(self.__class__).filter_by(post_id=post_id).all()
         if comments:
             return choice(comments)
-        else:
-            return []
+        return []
 
-    def get_text(self, post_id:int=None):
+    def get_text(self, post_id: int = None):
         comment = self.__class__(message=self.message)
         user = comment.get_random_user(post_id=post_id)
         if user:

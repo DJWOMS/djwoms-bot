@@ -1,8 +1,13 @@
-from utils.core import *
-from utils.keyboards import *
+from aiogram import types
+
+from core import bot
+from utils.core import dp
+from utils.database import Comment
+from utils.keyboards import keyboard
+from utils.variables import OWNERS
 
 
-@dp.message_handler(content_types=ContentType.TEXT)
+@dp.message_handler(content_types=types.ContentType.TEXT)
 async def any_text(message: types.Message):
     if "reply_to_message" in message:
         post_id = message.reply_to_message.forward_from_message_id
@@ -11,7 +16,7 @@ async def any_text(message: types.Message):
             if message.from_user.is_bot is not True:
                 comment = Comment(message=message)
                 comment.add(post_id=post_id)
-    
+
     if message.from_user.id in OWNERS:
         if "forward_from_message_id" in message:
             post_id = message.forward_from_message_id
