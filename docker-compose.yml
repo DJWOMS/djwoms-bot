@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    container_name: bot
+    command: python bot.py
+    ports:
+      - 80:80
+    volumes:
+      - ./:/app
